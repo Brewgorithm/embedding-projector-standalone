@@ -1,0 +1,28 @@
+version: "3.2"
+
+networks:
+
+  proxy:
+    external: true
+
+services:
+
+  projector:
+    image: localhost:5000/projector:${TAG:-latest}
+    networks:
+      - proxy
+    deploy:
+      update_config:
+        parallelism: 1
+        delay: 60s
+      labels:
+        - com.df.notify=true
+        - com.df.distribute=true
+        - com.df.serviceDomain=$SERVICE_DOMAIN
+        - com.df.port=8080
+        - com.df.letsencrypt.host=$SERVICE_DOMAIN
+        - com.df.letsencrypt.email=patrick.scott@zxlerator.com
+      placement:
+        constraints:
+          - node.labels.reserved != true
+          - node.role == worker
