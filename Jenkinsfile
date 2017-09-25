@@ -72,17 +72,17 @@ def publish() {
       publishVersion: {
         if (env.BRANCH_NAME == 'master') {
           sh "docker tag ${env.IMAGE_NAME} \
-            localhost:5000/${env.IMAGE_NAME}:0.${env.BUILD_NUMBER}"
+            ${env.registryDomain}/${env.IMAGE_NAME}:0.${env.BUILD_NUMBER}"
           sh "docker push \
-            localhost:5000/${env.IMAGE_NAME}:0.${env.BUILD_NUMBER}"
+            ${env.registryDomain}/${env.IMAGE_NAME}:0.${env.BUILD_NUMBER}"
         }
       },
       publishLatest: {
         if (env.BRANCH_NAME == 'master') {
           sh "docker tag ${env.IMAGE_NAME} \
-            localhost:5000/${env.IMAGE_NAME}:latest"
+            ${env.registryDomain}/${env.IMAGE_NAME}:latest"
           sh "docker push \
-            localhost:5000/${env.IMAGE_NAME}:latest"
+            ${env.registryDomain}/${env.IMAGE_NAME}:latest"
         }
       }
     )
@@ -117,9 +117,9 @@ def production() {
   stage("Publish Last Successful Production Deploy") {
     // QA deploy went successfully, tag last-prod as a rollback point
     sh "docker tag ${env.IMAGE_NAME} \
-      localhost:5000/${env.IMAGE_NAME}:last-prod"
+      ${env.registryDomain}/${env.IMAGE_NAME}:last-prod"
     sh "docker push \
-      localhost:5000/${env.IMAGE_NAME}:last-prod"
+      ${env.registryDomain}/${env.IMAGE_NAME}:last-prod"
   }
 }
 
