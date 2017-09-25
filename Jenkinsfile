@@ -1,4 +1,4 @@
-node("ubuntu-docker") {
+node("docker") {
   step([$class: 'WsCleanup'])
   sh "docker system prune -f"
   pull()
