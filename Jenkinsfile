@@ -1,6 +1,4 @@
 node("docker") {
-  step([$class: 'WsCleanup'])
-  sh "docker system prune -f"
   pull()
 
   try {
@@ -13,6 +11,7 @@ node("docker") {
   } finally {
     // Success or failure, always send notifications
     notifyBuild(currentBuild.result)
+    sh "docker system prune -f"
   }
 }
 
