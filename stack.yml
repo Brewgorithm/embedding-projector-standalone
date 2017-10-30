@@ -8,7 +8,7 @@ networks:
 services:
 
   projector:
-    image: localhost:5000/projector:${TAG:-latest}
+    image: brewgorithm/projector:${TAG:-latest}
     networks:
       - proxy
     deploy:

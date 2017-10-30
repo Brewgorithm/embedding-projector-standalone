@@ -24,8 +24,16 @@ def runCI() {
   ]) {
     prepare()
     build()
+    withCredentials([usernamePassword(
+      credentialsId: "docker",
+      usernameVariable: "USER",
+      passwordVariable: "PASS"
+    )]) {
+      sh "docker login -u $USER -p $PASS"
+    }
     tryPublish()
     release()
+    sh "docker logout"
   }
 }
 
@@ -71,17 +79,17 @@ def publish() {
       publishVersion: {
         if (env.BRANCH_NAME == 'master') {
           sh "docker tag ${env.IMAGE_NAME} \
-            ${env.registryDomain}/${env.IMAGE_NAME}:0.${env.BUILD_NUMBER}"
+            ${env.registry}/${env.IMAGE_NAME}:0.${env.BUILD_NUMBER}"
           sh "docker push \
-            ${env.registryDomain}/${env.IMAGE_NAME}:0.${env.BUILD_NUMBER}"
+            ${env.registry}/${env.IMAGE_NAME}:0.${env.BUILD_NUMBER}"
         }
       },
       publishLatest: {
         if (env.BRANCH_NAME == 'master') {
           sh "docker tag ${env.IMAGE_NAME} \
-            ${env.registryDomain}/${env.IMAGE_NAME}:latest"
+            ${env.registry}/${env.IMAGE_NAME}:latest"
           sh "docker push \
-            ${env.registryDomain}/${env.IMAGE_NAME}:latest"
+            ${env.registry}/${env.IMAGE_NAME}:latest"
         }
       }
     )
@@ -116,9 +124,9 @@ def production() {
   stage("Publish Last Successful Production Deploy") {
     // QA deploy went successfully, tag last-prod as a rollback point
     sh "docker tag ${env.IMAGE_NAME} \
-      ${env.registryDomain}/${env.IMAGE_NAME}:last-prod"
+      ${env.registry}/${env.IMAGE_NAME}:last-prod"
     sh "docker push \
-      ${env.registryDomain}/${env.IMAGE_NAME}:last-prod"
+      ${env.registry}/${env.IMAGE_NAME}:last-prod"
   }
 }
 
