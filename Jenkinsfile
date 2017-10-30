@@ -111,14 +111,14 @@ def production() {
         withEnv([
           "TAG=0.${env.BUILD_NUMBER}"
         ]) {
-          sh "docker stack deploy -c stack.yml ${env.STACK_NAME}"
+          sh "docker stack deploy -c stack.yml --with-registry-auth ${env.STACK_NAME}"
         }
       } catch(e) {
         // Rollback to last
         withEnv([
           "TAG=last-prod"
         ]) {
-          sh "docker stack deploy -c stack.yml ${env.STACK_NAME}"
+          sh "docker stack deploy -c stack.yml --with-registry-auth ${env.STACK_NAME}"
           error "Deployment to Production has failed"
         }
       }
