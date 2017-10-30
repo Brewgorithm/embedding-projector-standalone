@@ -100,7 +100,6 @@ def production() {
   stage("Production") {
 
     withEnv([
-        "DOCKER_HOST=tcp://${env.MANAGER_IP}:2375",
         "SERVICE_DOMAIN=projector.suggestbeer.com"
     ]) {
       try {
