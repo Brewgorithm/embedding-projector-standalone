@@ -3,7 +3,7 @@ properties([
   disableConcurrentBuilds()
 ])
 
-node("docker") {
+node("build") {
   pull()
 
   try {
@@ -20,6 +20,21 @@ node("docker") {
   }
 }
 
+node("prod") {
+  try {
+    notifyBuild('DEPLOY STARTED')
+    runDeploy()
+  } catch (e) {
+    // If there was an exception thrown, the build failed
+    currentBuild.result = "FAILED"
+    throw e
+  } finally {
+    // Success or failure, always send notifications
+    notifyBuild(currentBuild.result)
+    sh "docker system prune -f --volume"
+  }
+}
+
 def runCI() {
   withEnv([
     "GIT_BRANCH=${env.BRANCH_NAME}",
@@ -29,6 +44,16 @@ def runCI() {
   ]) {
     prepare()
     build()
+  }
+}
+
+def runDeploy() {
+  withEnv([
+    "GIT_BRANCH=${env.BRANCH_NAME}",
+    "JENKINS_URL=${env.JENKINS_URL}",
+    "IMAGE_NAME=projector",
+    "STACK_NAME=projector"
+  ]) {
     withCredentials([usernamePassword(
       credentialsId: "docker",
       usernameVariable: "USER",
