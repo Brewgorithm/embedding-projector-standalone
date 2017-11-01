@@ -55,16 +55,7 @@ def runDeploy() {
     "IMAGE_NAME=projector",
     "STACK_NAME=projector"
   ]) {
-    withCredentials([usernamePassword(
-      credentialsId: "docker",
-      usernameVariable: "USER",
-      passwordVariable: "PASS"
-    )]) {
-      sh "docker login -u $USER -p $PASS"
-    }
-    
     release()
-    sh "docker logout"
   }
 }
 
@@ -94,13 +85,29 @@ def build() {
 
 def tryPublish() {
   if (env.BRANCH_NAME == 'master') {
+    withCredentials([usernamePassword(
+      credentialsId: "docker",
+      usernameVariable: "USER",
+      passwordVariable: "PASS"
+    )]) {
+      sh "docker login -u $USER -p $PASS"
+    }
     publish()
+    sh "docker logout"
   }
 }
 
 def release() {
   if (env.BRANCH_NAME == 'master') {
+    withCredentials([usernamePassword(
+      credentialsId: "docker",
+      usernameVariable: "USER",
+      passwordVariable: "PASS"
+    )]) {
+      sh "docker login -u $USER -p $PASS"
+    }
     production()
+    sh "docker logout"
   }
 }
 
