@@ -33,7 +33,7 @@ node("prod") {
   } finally {
     // Success or failure, always send notifications
     notifyBuild(currentBuild.result)
-    sh "docker system prune -f --volume"
+    sh "docker system prune -f"
   }
 }
 
