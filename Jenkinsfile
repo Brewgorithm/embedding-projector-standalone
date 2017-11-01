@@ -16,7 +16,7 @@ node("build") {
   } finally {
     // Success or failure, always send notifications
     notifyBuild(currentBuild.result)
-    sh "docker system prune -f"
+    sh "docker system prune -f -a --volumes"
   }
 }
 
