@@ -44,6 +44,7 @@ def runCI() {
   ]) {
     prepare()
     build()
+    tryPublish()
   }
 }
 
@@ -61,7 +62,7 @@ def runDeploy() {
     )]) {
       sh "docker login -u $USER -p $PASS"
     }
-    tryPublish()
+    
     release()
     sh "docker logout"
   }
@@ -139,23 +140,9 @@ def production() {
           sh "docker stack deploy -c stack.yml --with-registry-auth ${env.STACK_NAME}"
         }
       } catch(e) {
-        // Rollback to last
-        withEnv([
-          "TAG=last-prod"
-        ]) {
-          sh "docker stack deploy -c stack.yml --with-registry-auth ${env.STACK_NAME}"
-          error "Deployment to Production has failed"
-        }
+        error "Deployment to Production has failed"
       }
     }
-  }
-
-  stage("Publish Last Successful Production Deploy") {
-    // QA deploy went successfully, tag last-prod as a rollback point
-    sh "docker tag ${env.IMAGE_NAME} \
-      ${env.registry}/${env.IMAGE_NAME}:last-prod"
-    sh "docker push \
-      ${env.registry}/${env.IMAGE_NAME}:last-prod"
   }
 }
 
