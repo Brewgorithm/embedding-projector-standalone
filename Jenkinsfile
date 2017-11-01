@@ -21,6 +21,8 @@ node("build") {
 }
 
 node("prod") {
+  pull()
+
   try {
     notifyBuild('DEPLOY STARTED')
     runDeploy()
